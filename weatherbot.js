@@ -16,7 +16,6 @@ var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
 
 // If someone mentions @DataNewsWeather, jump into action
 stream.on('tweet', function (tweet) {
-  console.log(tweet);
 
 	// Is the tweet directed at me? We'll know because the in_reply_to_user_id
 	// will be *MY* user id, which is 2908555695.
@@ -25,16 +24,13 @@ stream.on('tweet', function (tweet) {
 		// in_reply_to_user_id doesn't match
 		// Tweet not directed at me, just a mention
 		var tweet_text = "@jkeefe Someone's tweeting about me. Might wanna check it out: http://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
-		
 		tweetThis(tweet_text, null);
-		console.log("Just a mention.");
 
 
 		} else {	
 			
 		// Tweet directed at me. Extract the location from the tweet text
 		var location_text = extractLocation(tweet.text);
-		console.log(location_text);
 		
 		// Detect other fun things, like "thank you"
 		
@@ -49,7 +45,6 @@ stream.on('tweet', function (tweet) {
 			} else if (data.status == "ZERO_RESULTS") {
 				
 				// @reply that we couldn't find any results
-				console.log("no location found.");
 				var replyto = tweet.user.screen_name;
 				var tweet_text = "@" + replyto + " Hi! I couldn't find a location based on your tweet to me. For a forecast, try again with a city name.";
 				tweetThis(tweet_text, tweet.id_str);
@@ -59,10 +54,17 @@ stream.on('tweet', function (tweet) {
 				// found a location! Pull out the lat/lon 
 				var lat = data.results[0].geometry.location.lat;
 				var lon = data.results[0].geometry.location.lng;
-				console.log(lat,lon);
 				
 				// should we use celsius instead?
+				var country = getCountry(data.results[0].address_components);
+				var farenheit_countries = ["US", "BS", "BZ", "KY", "PW", "AS", "VI"];
+				var included = farenheit_countries.indexOf(country);
+				var use_celsius = false;
 				
+				if (included == -1 ) {
+					// our country is not in the list
+					use_celsius = true;
+				}
 
 				// configure the request to forecast.io
 				var options = {
@@ -104,14 +106,26 @@ stream.on('tweet', function (tweet) {
 						// build the components of the tweet
 						var replyto = tweet.user.screen_name;
 						var summary = forecast.summary;
-						var high = Math.round(forecast.temperatureMax);
+						var high = "";
+						
+							if (use_celsius === true) {
+								
+								var temp = (forecast.temperatureMax - 32) * 5 / 9;
+								high = Math.round(temp).toString(10) + "°C";
+								
+							} else {
+								
+								high = Math.round(forecast.temperatureMax).toString(10) + "°F";
+								
+							}
+						
 						var chance = Math.round(forecast.precipProbability * 100);
 						var precip = forecast.precipType;
 						var more = "http://forecast.io/#/f/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
 						var precip_text = "";
 						
 						// formulate precipitation repsonse if the chance is greater than 5%
-						if (chance >= 5) {
+						if (chance > 0) {
 							
 							precip_text = "chance of " + precip + " " + chance + "%.";
 							
@@ -121,17 +135,16 @@ stream.on('tweet', function (tweet) {
 							
 						}
 						
-						var tweet_text = "@" + replyto + " Hi! For " + weekday + ": " + summary + " High of " + high + "°F, " + precip_text + " " + more;
+						var tweet_text = "@" + replyto + " Hi! For " + weekday + ": " + summary + " High of " + high + ", " + precip_text + " " + more;
 												
-						console.log(tweet_text);
+						// console.log(tweet_text);
 						
+						// Turn off tweets here if testing locally
 						tweetThis(tweet_text, tweet.id_str);
 						
-
 					}
 					
 				});
-
 	
 			}
 				
@@ -155,6 +168,16 @@ function extractLocation(text) {
 	// Eventually also remove links
 	
 	return location;
+}
+
+// extract country short name (e.g. GB for Great Britain) from google geocode API result
+function getCountry(addrComponents) {
+    for (var i = 0; i < addrComponents.length; i++) {
+        if (addrComponents[i].types[0] == "country") {
+            return addrComponents[i].short_name;
+        }
+    }
+    return false;
 }
 			
 function tweetThis(text, id) {
