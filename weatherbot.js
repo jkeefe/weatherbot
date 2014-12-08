@@ -60,6 +60,9 @@ stream.on('tweet', function (tweet) {
 				var lat = data.results[0].geometry.location.lat;
 				var lon = data.results[0].geometry.location.lng;
 				console.log(lat,lon);
+				
+				// should we use celsius instead?
+				
 
 				// configure the request to forecast.io
 				var options = {
@@ -79,8 +82,6 @@ stream.on('tweet', function (tweet) {
 						
 						// all good getting forecast
 						var weather = JSON.parse(body);
-						var short_term = weather.hourly.summary;
-						var long_term = weather.daily.summary;
 						
 						// make this data[0] if it's before 2pm local time
 						// make this data[1] if it's after 2 p.m. local time
@@ -120,7 +121,7 @@ stream.on('tweet', function (tweet) {
 							
 						}
 						
-						var tweet_text = "@" + replyto + " Hi! For " + weekday + ": " + summary + " High of " + high + ", " + precip_text + " " + more;
+						var tweet_text = "@" + replyto + " Hi! For " + weekday + ": " + summary + " High of " + high + "°F, " + precip_text + " " + more;
 												
 						console.log(tweet_text);
 						
