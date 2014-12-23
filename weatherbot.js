@@ -28,6 +28,8 @@ stream.on('tweet', function (tweet) {
 
 
 		} else {	
+		
+		console.log("Tweet received:", tweet.text);
 			
 		// Tweet directed at me. Extract the location from the tweet text
 		var location_text = extractLocation(tweet.text);
@@ -50,6 +52,8 @@ stream.on('tweet', function (tweet) {
 				tweetThis(tweet_text, tweet.id_str);
 				
 			} else {
+				
+				console.log("Successful geocode.");
 	
 				// found a location! Pull out the lat/lon 
 				var lat = data.results[0].geometry.location.lat;
@@ -81,6 +85,8 @@ stream.on('tweet', function (tweet) {
 						console.log(error);
 						
 					} else {
+						
+						console.log("Successful forecast fetch.");
 						
 						// all good getting forecast
 						var weather = JSON.parse(body);
@@ -137,10 +143,10 @@ stream.on('tweet', function (tweet) {
 						
 						var tweet_text = "@" + replyto + " Hi! For " + weekday + ": " + summary + " High of " + high + ", " + precip_text + " " + more;
 												
-						// console.log(tweet_text);
+						console.log("Tweet sent:", tweet_text);
 						
 						// Turn off tweets here if testing locally
-						tweetThis(tweet_text, tweet.id_str);
+						// tweetThis(tweet_text, tweet.id_str);
 						
 					}
 					
