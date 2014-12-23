@@ -36,6 +36,7 @@ stream.on('tweet', function (tweet) {
 
 		} else {	
 		
+		console.log("---");
 		console.log("Tweet received:", tweet.text);
 			
 		// Tweet directed at me. Extract the location from the tweet text
@@ -199,7 +200,7 @@ function tweetThis(text, id) {
 		status: text,
 		in_reply_to_status_id: id 
 		}, function(err, data, response) {
-			console.log(data);
+			/// console.log(data);
 	});
 	
 }
