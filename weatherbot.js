@@ -11,8 +11,6 @@ var Bot = new Twit({
 	access_token_secret:  keys.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-console.log(keys.FORECAST_IO_API_KEY);
-
 // Listen To Twitter Stream filtered for @DataNewsWeather
 var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
 
