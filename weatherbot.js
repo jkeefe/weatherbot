@@ -14,6 +14,13 @@ var Bot = new Twit({
 // Listen To Twitter Stream filtered for @DataNewsWeather
 var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
 
+stream.on('error', function (error) {
+	
+	var tweet_text = "@jkeefe Uh oh. I'm having trouble: "+ error + " A little help?";
+	tweetThis(tweet_text, null);
+	
+});
+
 // If someone mentions @DataNewsWeather, jump into action
 stream.on('tweet', function (tweet) {
 
