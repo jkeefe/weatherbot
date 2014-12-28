@@ -38,25 +38,33 @@ stream.on('tweet', function (tweet) {
 		
 		console.log("---");
 		console.log("Tweet received:", tweet.text);
-			
+		
 		// Tweet directed at me. Extract the location from the tweet text
 		var location_text = extractLocation(tweet.text);
+		
+		// track who we should reply to
 		
 		// Detect other fun things, like "thank you"
 		
 		// Go forth and geocode that location
 		geocoder.geocode(location_text, function(err, data) {
 		
+			var replyto = tweet.user.screen_name;
+			var tweet_text;
+		
 			if (err) {
 				
+				// @reply about the geocode fail
+				tweet_text = "@" + replyto + " Hi! Something went wrong with my geocoding system, so I can't get you a forecast. Sorry! cc @jkeefe";
+				tweetThis(tweet_text, tweet.id_str);
+				
 				// log the error
-				console.log(err);
+				console.log("Geocode error: ", err);
 			
 			} else if (data.status == "ZERO_RESULTS") {
 				
 				// @reply that we couldn't find any results
-				var replyto = tweet.user.screen_name;
-				var tweet_text = "@" + replyto + " Hi! I couldn't find a location based on your tweet to me. For a forecast, try again with a city name.";
+				tweet_text = "@" + replyto + " Hi! I couldn't find a location based on your tweet to me. For a forecast, try again with a city name.";
 				tweetThis(tweet_text, tweet.id_str);
 				
 			} else {
@@ -90,7 +98,12 @@ stream.on('tweet', function (tweet) {
 					if (error || response.statusCode != 200) {
 						
 						// Something went wrong getting forecast
-						console.log(error);
+						// @reply about that
+						tweet_text = "@" + replyto + " Hi! Something went wrong getting your forcast. I'm sorry! cc @jkeefe";
+						tweetThis(tweet_text, tweet.id_str);
+
+						// log the error
+						console.log("Forecast fetching error: ", error);
 						
 					} else {
 						
@@ -99,26 +112,45 @@ stream.on('tweet', function (tweet) {
 						// all good getting forecast
 						var weather = JSON.parse(body);
 						
-						// make this data[0] if it's before 2pm local time
-						// make this data[1] if it's after 2 p.m. local time
-						var forecast = weather.daily.data[1];
-						
-						// pluck out the day of the week for the two days
-						// and add them to the day objects
-						
-						// grab the forecast time, turn it into an EST (my local) moment object
-						var time_calculation = moment.unix(forecast.time);
+						// What time is it!?!
+						// Here current_local_time will be set to the time at the forecast location
+						var current_local_time = moment.unix(weather.currently.time);
 						
 							// adjust the offset based on the one provided by forecast, 
 							// so we are using times local to the forecast point.
 							// ... need to take the inverse since moment assumes negative offset
-							time_calculation = time_calculation.zone(-1 * weather.offset);
+							current_local_time = current_local_time.zone(-1 * weather.offset);
+							
+						// use today's forecast data[0] if it's before noon local time
+						// use tomorrow's forecast data[1] if it's after noonlocal time
+						var forecast;
 						
-						// take the day of the week out of the forecast time (Sunday, Monday, Tuesday)
-						var weekday = time_calculation.format("dddd");
+						if (current_local_time.hour() < 12) {
+							forecast = weather.daily.data[0];
+						} else {
+							forecast = weather.daily.data[1];
+						}
 						
-						// build the components of the tweet
-						var replyto = tweet.user.screen_name;
+						// grab the forecast time, turn it into an unix moment object
+						var forecast_time = moment.unix(forecast.time);
+						
+							// adjust the offset based on the one provided by forecast, 
+							// again, using times local to the forecast point.
+							// ... need to take the inverse since moment assumes negative offset
+							forecast_time = forecast_time.zone(-1 * weather.offset);
+						
+						// build the components of the tweet ...
+						
+						// if the forecast day of the week and the current day of the week are the same,
+						// call the forecast "today." Otherwise use the day of the week for the forecast.
+						var forecast_day;
+						if (forecast_time.day() == current_local_time.day()) {
+							forecast_day = "today";
+						} else {
+							// take the day of the week out of the forecast time (Sunday, Monday, Tuesday)
+							forecast_day = forecast_time.format("dddd");
+						}
+						
 						var summary = forecast.summary;
 						var high = "";
 						
@@ -138,7 +170,7 @@ stream.on('tweet', function (tweet) {
 						var more = "http://forecast.io/#/f/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
 						var precip_text = "";
 						
-						// formulate precipitation repsonse if the chance is greater than 5%
+						// show precipitation repsonse if the chance is greater than 0%
 						if (chance > 0) {
 							
 							precip_text = "chance of " + precip + " " + chance + "%.";
@@ -149,7 +181,7 @@ stream.on('tweet', function (tweet) {
 							
 						}
 						
-						var tweet_text = "@" + replyto + " Hi! For " + weekday + ": " + summary + " High of " + high + ", " + precip_text + " " + more;
+						tweet_text = "@" + replyto + " Hi! For " + forecast_day + ": " + summary + " High of " + high + ", " + precip_text + " " + more;
 												
 						console.log("Tweet sent:", tweet_text);
 						
