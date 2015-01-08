@@ -3,6 +3,8 @@ weatherbot
 
 A Twitter bot that replies with a forecast.
 
+See it in action by Tweeting at [@HiWeatherbot](http://twitter.com/HiWeatherbot) with a location.
+
 This is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs. It runs using [Node.js](http://nodejs.org/) and uses the following node modules to make it all happen:
 
 - [Twit](https://github.com/ttezel/twit)
