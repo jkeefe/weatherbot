@@ -11,17 +11,18 @@ var Bot = new Twit({
 	access_token_secret:  keys.TWITTER_ACCESS_TOKEN_SECRET
 });
 
-// Listen To Twitter Stream filtered for @DataNewsWeather
+// Listen To Twitter Stream filtered for @HiWeatherbot
 var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
 
 stream.on('error', function (error) {
 	
+	// Tweet the error at my owner
 	var tweet_text = "@jkeefe Uh oh. I'm having trouble: "+ error + " A little help?";
 	tweetThis(tweet_text, null);
 	
 });
 
-// If someone mentions @DataNewsWeather, jump into action
+// If someone mentions @HiWeatherbot, jump into action
 stream.on('tweet', function (tweet) {
 
 	// Is the tweet directed at me? We'll know because the in_reply_to_user_id
@@ -39,12 +40,11 @@ stream.on('tweet', function (tweet) {
 		console.log("---");
 		console.log("Tweet received:", tweet.text);
 		
-		// Tweet directed at me. Extract the location from the tweet text
+		// Tweet directed at me! Extract the location from the tweet text
 		var location_text = extractLocation(tweet.text);
 		
-		// track who we should reply to
-		
-		// Detect other fun things, like "thank you"
+		// TODO: Detect other fun things, like "thank you" and "hello"
+		// TODO: Detect a blank tweet, which messes up the geocoder code
 		
 		// Go forth and geocode that location
 		geocoder.geocode(location_text, function(err, data) {
