@@ -202,7 +202,7 @@ stream.on('tweet', function (tweet) {
 						console.log("Tweet sent:", tweet_text);
 						
 						//Turn off tweets here if testing locally
-						// tweetThis(tweet_text, tweet.id_str);
+						tweetThis(tweet_text, tweet.id_str);
 						
 					}
 					
