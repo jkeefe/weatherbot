@@ -44,6 +44,8 @@ stream.on('tweet', function (tweet) {
 		var location_text = extractLocation(tweet.text);
 		
 		// TODO: Detect other fun things, like "thank you" and "hello"
+		
+		
 		// TODO: Detect a blank tweet, which messes up the geocoder code
 		
 		// Go forth and geocode that location
@@ -66,6 +68,7 @@ stream.on('tweet', function (tweet) {
 				// @reply that we couldn't find any results
 				tweet_text = "@" + replyto + " Hi! I couldn't find a location based on your tweet to me. For a forecast, try again with a city name.";
 				tweetThis(tweet_text, tweet.id_str);
+				console.log("Geocode Zero Results");
 				
 			} else {
 				
@@ -74,6 +77,9 @@ stream.on('tweet', function (tweet) {
 				// found a location! Pull out the lat/lon 
 				var lat = data.results[0].geometry.location.lat;
 				var lon = data.results[0].geometry.location.lng;
+				
+				// grab the name of the locality for the tweet
+				var locality = getLocality(data.results[0].address_components);
 				
 				// should we use celsius instead?
 				var country = getCountry(data.results[0].address_components);
@@ -181,12 +187,22 @@ stream.on('tweet', function (tweet) {
 							
 						}
 						
-						tweet_text = "@" + replyto + " Hi! For " + forecast_day + ": " + summary + " High of " + high + ", " + precip_text + " " + more;
+						tweet_text = "@" + replyto + " Hi! " + locality + " " + forecast_day + ": " + summary + " High of " + high + ", " + precip_text;
+						
+						// make sure it's not more than 140 characters
+						tweet_text = tweet_text.substring(0,140);
+						
+						// if there's room, add on the forecast.io url
+						// this is based on the current t.co length (22) from 140 (118) and a space (117)
+						// more info here: https://dev.twitter.com/overview/t.co
+						if (tweet_text.length <= 117) {
+							tweet_text = tweet_text + " " + more;
+						}
 												
 						console.log("Tweet sent:", tweet_text);
 						
 						//Turn off tweets here if testing locally
-						tweetThis(tweet_text, tweet.id_str);
+						// tweetThis(tweet_text, tweet.id_str);
 						
 					}
 					
@@ -225,7 +241,22 @@ function getCountry(addrComponents) {
     }
     return false;
 }
-			
+
+// extract locality (e.g. Minneapolis) from google geocode API result
+function getLocality(addrComponents) {
+    for (var i = 0; i < addrComponents.length; i++) {
+        if (addrComponents[i].types[1] == "sublocality") {
+            return addrComponents[i].long_name;
+        } else if (addrComponents[i].types[0] == "locality") {
+			return addrComponents[i].short_name;
+		}
+    }
+    // This replaces a blank locality in the tweet. So instead of "Minneapolis Friday"
+	// tweet will say "For Friday"
+    return "For";
+}
+
+// the tweeting function			
 function tweetThis(text, id) {
 	
 	Bot.post('statuses/update', { 
