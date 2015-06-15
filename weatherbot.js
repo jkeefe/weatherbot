@@ -15,11 +15,28 @@ var Bot = new Twit({
 var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
 
 stream.on('error', function (error) {
-	
 	// Tweet the error at my owner
 	var tweet_text = "@jkeefe Uh oh. I'm having trouble: "+ error + " A little help?";
 	tweetThis(tweet_text, null);
-	
+});
+
+stream.on('limit', function(limitMessage){
+	var tweet_text = "@jkeefe I'm getting:" + limitMessage;
+  tweetThis(tweet_text, null);
+  console.log(limitMessage);
+});
+
+stream.on('disconnect', function (disconnectMessage) {
+	var tweet_text = "@jkeefe !?!:" + disconnectMessage;
+  tweetThis(tweet_text, null);
+  console.log(disconnectMessage);
+});
+
+stream.on('reconnect', function (request, response, connectInterval) {
+	var tweet_text = "@jkeefe Reconnecting in: " + connectInterval + "ms";
+  tweetThis(tweet_text, null);
+  console.log("Reconnect Request: " + request);
+  console.log("Reconnect Response: " + response);
 });
 
 // If someone mentions @HiWeatherbot, jump into action
