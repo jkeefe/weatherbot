@@ -42,9 +42,11 @@ stream.on('reconnect', function (request, response, connectInterval) {
 // If someone mentions @HiWeatherbot, jump into action
 stream.on('tweet', function (tweet) {
 
-	// Is the tweet directed at me? We'll know because the in_reply_to_user_id
-	// will be *MY* user id, which is 2908555695.
-	if (tweet.in_reply_to_user_id != 2908555695) {
+	// First, making sure the tweet is not directed at me? (A mention not an @reply)
+  // - which we can know because the in_reply_to_user_id isn't me (2908555695)
+  // And also that the tweet wasn't sent BY me
+	// - which we'll know because the user isn't 2908555695.
+	if (tweet.in_reply_to_user_id != 2908555695 && tweet.user.id != 2908555695) {
 		
 		// in_reply_to_user_id doesn't match
 		// Tweet not directed at me, just a mention
