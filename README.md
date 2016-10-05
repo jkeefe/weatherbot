@@ -1,13 +1,14 @@
-weatherbot
-==========
+# Weatherbot
+
+![HiWeatherbot](images/hiweatherbot.png)
 
 A Twitter bot that replies with a forecast.
 
 See it in action by Tweeting at [@HiWeatherbot](http://twitter.com/HiWeatherbot) with a location.
 
-This is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs -- including the fabulous [forecast.io API](https://developer.forecast.io/).
+This is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs -- including the fabulous [darksky.net API](https://darksky.net/dev/).
 
-Please note that this is experimental code and the bot may not always be running. If you'd like to prod me into waking it up, drop me a note at john (at) johnkeefe (dot) net.
+And as an experiment, it's been known to fail. At one point, it even went into a crazy loop tweeting at itself (until Twitter wisely put an end to that). If it's not running, feel free to prod me into waking it up by dropping me a note at john (at) johnkeefe (dot) net.
 
 ##Node
 
@@ -24,7 +25,9 @@ It also requires Twitter API keys and OAUTH tokens you can get by logging into y
 
 And by "your" Twitter account I mean an account you control. I wouldn't recommend doing this on your valuable personal account, as it's possible to accidentally run afoul of the Twitter API rules ... which could lock up the account.
 
-The keys, along with an API key from [forecast.io](https://developer.forecast.io/), are stored in a file called `weatherbot_keys.js` in a directory outside the weatherbot folder -- mainly so I didn't accidentally include them here. They are brought in with an include statement near the top of the 'weatherbot.js' file. The structure of 'weatherbot_keys.js' is like this:
+The keys, along with an API key from [darksky.net](https://darksky.net/dev/), are stored in a file called `weatherbot_keys.js` in a directory outside the weatherbot folder -- mainly so I didn't accidentally include them here. They are brought in with an include statement near the top of the 'weatherbot.js' file. 
+
+The structure of 'weatherbot_keys.js' is like this:
 
 	var TWITTER_CONSUMER_KEY = 'your_consumer_key_goes_here',
 		TWITTER_CONSUMER_SECRET = 'your_consumer_secret_goes_here',
@@ -37,6 +40,8 @@ The keys, along with an API key from [forecast.io](https://developer.forecast.io
 		module.exports.TWITTER_ACCESS_TOKEN = TWITTER_ACCESS_TOKEN;
 		module.exports.TWITTER_ACCESS_TOKEN_SECRET = TWITTER_ACCESS_TOKEN_SECRET;
 		module.exports.FORECAST_IO_API_KEY = FORECAST_IO_API_KEY;
+
+Darksky.net used to be forecast.io, hence the `FORECAST_IO_API_KEY` key name.
 
 ##Running
 
