@@ -185,7 +185,7 @@ stream.on('tweet', function (tweet) {
 						
 						var chance = Math.round(forecast.precipProbability * 100);
 						var precip = forecast.precipType;
-						var more = "http://darksky.net/#/f/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
+						var more = "http://darksky.net/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
 						var precip_text = "";
 						
 						// show precipitation repsonse if the chance is greater than 0%
