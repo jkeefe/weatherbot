@@ -4,6 +4,9 @@
 
 A Twitter bot that replies with a forecast.
 
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/jkeefe">@jkeefe</a> Hi! Miami Wednesday: Rain throughout the day and breezy starting in the evening. High of 89°F, chance of rain 62%.</p>&mdash; Hi Weatherbot! (@HiWeatherbot) <a href="https://twitter.com/HiWeatherbot/status/783471432395358209">October 5, 2016</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 See it in action by Tweeting at [@HiWeatherbot](http://twitter.com/HiWeatherbot) with a location.
 
 This is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs -- including the fabulous [darksky.net API](https://darksky.net/dev/).
