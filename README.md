@@ -4,13 +4,13 @@
 
 A Twitter bot that replies with a forecast.
 
+See it in action by Tweeting at [@HiWeatherbot](http://twitter.com/HiWeatherbot) with a location, and look for a reply like this:
+
 ![HiWeatherbot Tweet](images/tweet.png)
 
-See it in action by Tweeting at [@HiWeatherbot](http://twitter.com/HiWeatherbot) with a location.
+Weatherbot is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs -- including the fabulous [darksky.net API](https://darksky.net/dev/).
 
-This is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs -- including the fabulous [darksky.net API](https://darksky.net/dev/).
-
-And as an experiment, it's been known to fail. At one point, it even went into a crazy loop tweeting at itself (until Twitter wisely put an end to that). If it's not running, feel free to prod me into waking it up by dropping me a note at john (at) johnkeefe (dot) net.
+As an experiment, it's been known to fail. At one point it even went into a crazy loop tweeting at itself (until Twitter wisely put an end to _that_). If it's not running, feel free to let me know by dropping me a note at john (at) johnkeefe (dot) net.
 
 ##Node
 
