@@ -7,6 +7,8 @@ See it in action by Tweeting at [@HiWeatherbot](http://twitter.com/HiWeatherbot)
 
 This is an experiment in building a mildly useful Twitter bot and juggling a bunch of APIs -- including the fabulous [forecast.io API](https://developer.forecast.io/).
 
+Please note that this is experimental code and the bot may not always be running. If you'd like to prod me into waking it up, drop me a note at john (at) johnkeefe (dot) net.
+
 ##Node
 
 The program runs in [Node](http://nodejs.org/) and uses the following node modules to make it all happen:

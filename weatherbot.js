@@ -15,55 +15,48 @@ var Bot = new Twit({
 var stream = Bot.stream('statuses/filter', { track: ['@HiWeatherbot'] });
 
 stream.on('error', function (error) {
-	// Tweet the error at my owner
-	var tweet_text = "@jkeefe Uh oh. I'm having trouble: "+ error + " A little help?";
-	tweetThis(tweet_text, null);
+	// Log the error
+	console.log("Weatherbot error: ", error);
 });
 
 stream.on('limit', function(limitMessage){
-	var tweet_text = "@jkeefe I'm getting:" + limitMessage;
-  tweetThis(tweet_text, null);
-  console.log(limitMessage);
+  	console.log("Weatherbot limit problem: ",limitMessage);
 });
 
 stream.on('disconnect', function (disconnectMessage) {
-	var tweet_text = "@jkeefe !?!:" + disconnectMessage;
-  tweetThis(tweet_text, null);
-  console.log(disconnectMessage);
+  	console.log("Weatherbot disconnect issue: ",disconnectMessage);
 });
 
 stream.on('reconnect', function (request, response, connectInterval) {
-	var tweet_text = "@jkeefe Reconnecting in: " + connectInterval + "ms";
-  tweetThis(tweet_text, null);
-  console.log("Reconnect Request: " + request);
-  console.log("Reconnect Response: " + response);
+	console.log("Reconnect issue. Reconnecting in:", connectInterval + "ms");
+	console.log("Reconnect Request: " + request);
+	console.log("Reconnect Response: " + response);
 });
 
 // If someone mentions @HiWeatherbot, jump into action
 stream.on('tweet', function (tweet) {
 
-	// First, making sure the tweet is not directed at me? (A mention not an @reply)
-  // - which we can know because the in_reply_to_user_id isn't me (2908555695)
-  // And also that the tweet wasn't sent BY me
-	// - which we'll know because the user isn't 2908555695.
-	if (tweet.in_reply_to_user_id != 2908555695 && tweet.user.id != 2908555695) {
+	// First, making sure the tweet is not directed at me --
+	// needs to be a directed message with @hiweatherbot, not just a mention.
+    // We can know because the in_reply_to_user_id isn't me (2908555695)
+ 	if (tweet.in_reply_to_user_id != 2908555695) {
 		
 		// in_reply_to_user_id doesn't match
 		// Tweet not directed at me, just a mention
-		var tweet_text = "@jkeefe Someone's tweeting about me. Might wanna check it out: http://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
-		tweetThis(tweet_text, null);
-
-
+		// Log it (might also do something like Slack it)
+		
+		var log_text = "Weatherbot note: Someone's tweeting about me. http://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
+		console.log(log_text);
+		
 		} else {	
 		
 		console.log("---");
-		console.log("Tweet received:", tweet.text);
+		console.log("Weeatherbot tweet received:", tweet.text);
 		
 		// Tweet directed at me! Extract the location from the tweet text
 		var location_text = extractLocation(tweet.text);
 		
 		// TODO: Detect other fun things, like "thank you" and "hello"
-		
 		
 		// TODO: Detect a blank tweet, which messes up the geocoder code
 		
