@@ -104,13 +104,13 @@ stream.on('tweet', function (tweet) {
 					use_celsius = true;
 				}
 
-				// configure the request to forecast.io
+				// configure the request to darksky.net
 				var options = {
-					url: 'https://api.forecast.io/forecast/'+ keys.FORECAST_IO_API_KEY +'/' + lat + ',' + lon,
+					url: 'https://api.darksky.net/forecast/'+ keys.FORECAST_IO_API_KEY +'/' + lat + ',' + lon,
 					method: 'GET'
 				};
 				
-				// Start the request to forecast.io
+				// Start the request to api.darksky.net
 				request(options, function (error, response, body) {
 					
 					if (error || response.statusCode != 200) {
@@ -185,7 +185,7 @@ stream.on('tweet', function (tweet) {
 						
 						var chance = Math.round(forecast.precipProbability * 100);
 						var precip = forecast.precipType;
-						var more = "http://forecast.io/#/f/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
+						var more = "http://darksky.net/#/f/" + lat.toPrecision(6) + "," + lon.toPrecision(6);
 						var precip_text = "";
 						
 						// show precipitation repsonse if the chance is greater than 0%
@@ -204,7 +204,7 @@ stream.on('tweet', function (tweet) {
 						// make sure it's not more than 140 characters
 						tweet_text = tweet_text.substring(0,140);
 						
-						// if there's room, add on the forecast.io url
+						// if there's room, add on the api.darksky.net url
 						// this is based on the current t.co length (22) from 140 (118) and a space (117)
 						// more info here: https://dev.twitter.com/overview/t.co
 						if (tweet_text.length <= 117) {
